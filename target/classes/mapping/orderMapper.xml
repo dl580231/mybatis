@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapping.orderMapper">
+	<!-- 是查不到指定id的表信息，因为表与实体属性名不一致 -->
+	<select id="getOrder" parameterType="int" resultType="Order">
+		select * from orders where order_id=#{id}
+	</select>
+	
+	<!-- 通过将从表查询得来数据设置别名来与实体属性名进行匹配 -->
+	<select id="selectOrder" parameterType="int" resultType="Order">
+		select order_id id,order_no orderNo,order_price orderPrice from orders where order_id=#{id}
+	</select>
+	
+	<!-- 通过resultMap将表中属性映射到实体属性 -->
+	<resultMap type="entity.Order" id="orderResultMap">
+		<id property="id" column="order_id"/>
+		<result property="orderNo" column="order_no"/>
+		<result property="orderPrice" column="order_price"/>
+	</resultMap>
+	
+	<select id="getOrderResultMap" parameterType="int" resultMap="orderResultMap">
+		select * from orders where order_id=#{id}
+	</select>
+</mapper>

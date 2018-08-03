@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<properties resource="db.properties"></properties>
+	
+	<!-- 为简化sql映射xml文件中对类的引用设置别名 -->
+	<typeAliases>
+		<!-- 对单一的实体类设置别名 -->
+		<!-- <typeAlias type="entity.Users" alias="_Users"/> -->
+		
+		<!-- 为某个包下的所有实体类设置别名，默认会将包中每个类的别名设置为去掉包名的名字：entity.Users的别名默认设置为Users -->
+		<package name="entity"/>
+	</typeAliases>
+	
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC"></transactionManager>
+			<dataSource type="POOLED">
+			<!-- 配置数据库连接信息 -->
+			<property name="driver" value="${driver}"/>
+			<property name="url" value="${url}"/>
+			<property name="username" value="${username}"/>
+			<property name="password" value="${password}"/>
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<mappers>
+		<!-- 注册userMapper.xml文件 -->
+		<mapper resource="mapping/userMapper.xml"/>
+		<!-- 注册接口实现的映射 -->
+		<mapper class="mapping.UserMapperI"/>
+		<!-- 注册order实体类的xml映射文件 -->
+		<mapper resource="mapping/orderMapper.xml"/>
+		<!-- 注册class实体类的xml映射文件 -->
+		<mapper resource="mapping/classMapper.xml"/>
+		<!-- 注册p_user表的xml映射文件 -->
+		<mapper resource="mapping/p_userMapper.xml"/>
+	</mappers>
+</configuration>

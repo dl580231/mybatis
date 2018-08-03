@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapping.classMapper">
+
+	<!-- 
+		association的属性：
+			- property：实体类属性的名称
+			- javaType：属性的类型
+			- column：外键的名称
+			- select：使用其他查询封装的结果
+	 -->
+<!-- 一对一表查询======================================================================================================= -->
+	<!-- 方式一：
+				多表联合查询：将返回结果通过resultMap映射为实体类 -->
+	<select id="getClassById" parameterType="int" resultMap="ClassResultMpper">
+		select * from class c,teacher t where c.c_id=#{id} and c.teacher_id=t.t_id
+	</select>
+	<resultMap type="entity.Class" id="ClassResultMpper">
+		<id property="id" column="c_id"/>
+		<result property="name" column="c_name"/>
+		<association property="teacher" javaType="entity.Teacher">
+			<id property="id" column="t_id"/>
+			<result property="name" column="t_name"/>
+		</association>
+	</resultMap>
+	
+	
+	<!-- 方式二：
+				嵌套查询，将第一次在class表中查出的class的techer_id，传入teacher表中查出对应的teacher -->
+	<select id="selectClassById" parameterType="int" resultMap="ClassResultMapper_2">
+		select * from class where c_id=#{id}
+	</select>
+	<resultMap type="Class" id="ClassResultMapper_2">
+		<id property="id" column="c_id"/>
+		<result property="name" column="c_name"/>
+		<association property="teacher" column="teacher_id" select="getTeacherById">
+		</association>
+	</resultMap>
+	<select id="getTeacherById" parameterType="int" resultMap="TeacherMapper">
+		select * from teacher where t_id=#{id}
+	</select>
+	<resultMap type="Teacher" id="TeacherMapper">
+		<id property="id" column="t_id"/>
+		<result property="name" column="t_name"/>
+	</resultMap>
+	<!-- 一对多表查询================================================================================================ -->
+	
+	<!-- MyBatis中使用collection标签来解决一对多的关联查询，ofType属性指定集合中元素的对象类型。 -->
+	
+	<!-- 方式一：使用多表联合查询一次性差西湖所有信息，再将数据封装到各个类中 -->
+	<select id="getClassById_m" parameterType="int" resultMap="ClassResultMapper_m">
+		select * from class c,teacher t,student s where c.c_id=t.t_id and s.class_id=c.c_id and c.c_id=#{id}
+	</select>
+	<resultMap type="Class" id="ClassResultMapper_m">
+		<id property="id" column="c_id"/>
+		<result property="name" column="c_name"/>
+		<association property="teacher" javaType="Teacher">
+			<id property="id" column="t_id"/>
+			<result property="name" column="t_name"/>
+		</association>
+		<collection property="students" ofType="Student">
+			<id property="id" column="s_id"/>
+			<result property="name" column="s_name"/>
+		</collection>
+	</resultMap>
+	
+	
+	<!-- 方式二：使用多表嵌套查询进行处理 -->
+	<select id="getClassById_m_2" parameterType="int" resultMap="ClassResultMapper_m_2">
+		select * from class c where c_id=#{id}
+	</select>
+	<resultMap type="Class" id="ClassResultMapper_m_2">
+		<id property="id" column="c_id"/>
+		<result property="name" column="c_name"/>
+		<association property="teacher" column="teacher_id" select="getTeacherById"/>
+		<collection property="students" column="c_id" select="getStudents"></collection>
+	</resultMap>
+	<select id="getStudents" parameterType="int" resultMap="StudentMapper">
+		select * from student s,class c where s.class_id=c.c_id and c_id=#{id}
+	</select>
+	<resultMap type="Student" id="StudentMapper">
+		<id property="id" column="s_id"/>
+		<result property="name" column="s_name"/>
+	</resultMap>
+	<!-- ====================================================================================================== -->
+</mapper>

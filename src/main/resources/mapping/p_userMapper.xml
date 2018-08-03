@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapping.p_userMapper">
+	<!-- 通过statementType="CALLABLE"指定调用存储过程 -->
+	<select id="getCountBySex" parameterMap="p_UserMapper" statementType="CALLABLE">
+		CALL mybatis.get_user_count(?,?)
+	</select>
+	<parameterMap type="java.util.Map" id="p_UserMapper">
+		<parameter property="sex" mode="IN" jdbcType="INTEGER"/>
+		<parameter property="count" mode="OUT" jdbcType="INTEGER"/>
+	</parameterMap>
+</mapper>
